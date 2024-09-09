@@ -1,0 +1,6 @@
+{
+	"name": "ignite",
+	"tree": {
+		"$path": "src"
+	}
+}

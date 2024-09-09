@@ -1,0 +1,16 @@
+# Project place file
+/ui_kit.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+._*
+
+/assets/
+
+/Packages/
+
+/docs_site/
+
+/docs_site
