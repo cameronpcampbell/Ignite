@@ -33,7 +33,7 @@ end
 
 --> Variables -----------------------------------------------------------------------------------------
 local ThemeForScopes: { [Fusion.Scope]: Fusion.Value<Types.ThemeFlatConfig> } = {}
-local DefaultDarkTheme, DefaultLightTheme = FlattenThemeConfig(DefaultThemes.Dark), FlattenThemeConfig(DefaultThemes.Light)
+local DefaultDarkTheme = FlattenThemeConfig(DefaultThemes.Dark)
 
 local peek = Fusion.peek
 -------------------------------------------------------------------------------------------------------
@@ -63,7 +63,6 @@ end
 local function SetThemeForScope(scope: Fusion.Scope, theme: Types.ThemeConfig | DefaultThemes.DefaultTheme)
   local flatTheme =
     if theme == "Dark" then DefaultDarkTheme
-    elseif theme == "Light" then DefaultLightTheme
     else FlattenThemeConfig(theme)
 
   -- Makes sure the theme is cleaned up when the scope is destroyed.
@@ -76,7 +75,9 @@ local function SetThemeForScope(scope: Fusion.Scope, theme: Types.ThemeConfig | 
   ThemeForScopes[scope]:set(flatTheme)
 end
 
-local function GetThemeItemForScope(scope: Fusion.Scope, item: Fusion.UsedAs<Types.ThemeItem>, feedbackMode: Fusion.UsedAs<Types.FeedbackMode?>?, twInfo: TweenInfo? | false)
+local function GetThemeItemForScope(
+  scope: Fusion.Scope, item: Fusion.UsedAs<Types.ThemeItem>, feedbackMode: Fusion.UsedAs<Types.FeedbackMode?>?, twInfo: Fusion.UsedAs<TweenInfo?>? | false
+)
   if twInfo == nil then twInfo = TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out) end
 
   return scope:Tween(scope:Computed(function(use)
@@ -90,7 +91,7 @@ local function GetThemeItemForScope(scope: Fusion.Scope, item: Fusion.UsedAs<Typ
       if usedFeebackMode == "Hover" then ApplyHoverFeedbackMode(scope, color)
       elseif usedFeebackMode == "Highlight" then ApplyHighlightFeedbackMode(scope, color)
       else ApplyFocusFeedbackMode(scope, color)
-  end), if twInfo == false then nil else twInfo)
+  end), if twInfo == false then nil else twInfo :: Fusion.UsedAs<TweenInfo>?)
 end
 -------------------------------------------------------------------------------------------------------
 

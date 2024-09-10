@@ -25,6 +25,7 @@ local TextLabel = require(CoreComponents.TextLabel)
 type ButtonProps = {
   Width: Fusion.UsedAs<UDim>?,
   Text: Fusion.UsedAs<string>?,
+  Variant: ("Primary" | "Secondary" | "Destructive")?
 }
 -------------------------------------------------------------------------------------------------------
 
@@ -45,12 +46,13 @@ local Children, OnEvent = Fusion.Children, Fusion.OnEvent
 return Component(function(scope, props: ButtonProps)
   local width = TableTake(props, "Width", UDim.new(1,0)) :: Fusion.UsedAs<UDim>
   local text = TableTake(props, "Text", "Button") :: Fusion.UsedAs<string>
+  local variant = TableTake(props, "Variant", "Primary") :: Fusion.UsedAs<"Primary" | "Secondary" | "Destructive">
 
   local isHover, isFocus = scope:Value(false), scope:Value(false)
 
-  local computeBackgroundColor = scope:GetThemeItem("Accent/Primary", scope:Computed(function(use)
-    return if use(isFocus) then "Focus" elseif use(isHover) then "Hover" else nil :: any
-  end))
+  local computeBackgroundColor = scope:GetThemeItem(
+    scope:Computed(function(use) return `Accent/{use(variant) or "Primary"}` :: any end),
+    scope:Computed(function(use) return if use(isFocus) then "Focus" elseif use(isHover) then "Hover" else nil :: any end))
 
   -- Handles the edge case of the user dragging the cursor off of the button and then releasing the mouse button.
   scope:AddRootEvent("InputEnded", function() isFocus:set(false) end)

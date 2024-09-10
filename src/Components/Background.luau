@@ -16,11 +16,10 @@ local Fusion = require(Packages.Fusion)
 
 
 return Component(function(scope, props: Fusion.PropertyTable)
-  local background = scope:New "ImageButton" (CombineProps({
+  return scope:New "Frame" (CombineProps({
     Size = UDim2.fromScale(1, 1),
     BackgroundColor3 = scope:GetThemeItem("Background/Primary"),
-  }, props)) :: ImageButton
-
-  return background :: Instance
+    Name = "Background"
+  }, props))
 end)
 

@@ -10,6 +10,8 @@ local StarterGui = game:GetService("StarterGui")
 local Modules = script.Parent.Parent.Modules
 local RootEventHandlersUtils = require(Modules.RootEventHandlersUtils)
 local Component = require( Modules.Component)
+local CombineProps = require(Modules.CombineProps)
+local TableUtils = require(Modules.TableUtils)
 
 local Packages = script.Parent.Parent.Packages
 local Fusion = require(Packages.Fusion)
@@ -36,6 +38,7 @@ type WindowSettingsProps = {
 
 
 --> Variables -----------------------------------------------------------------------------------------
+local TableTake = TableUtils.Take
 local AddRootToHandler = RootEventHandlersUtils.AddRootToHandler
 
 local Children = Fusion.Children
@@ -44,8 +47,11 @@ local Children = Fusion.Children
 
 return Component(function(scope, props: WindowSettingsProps)
   local id, title, initDockState, initEnabled, overrideEnabledRestore, floatXSize, floatYSize, minWidth, minHeight, debugMode = 
-	  props.Id, props.Title, props.InitDockState, props.InitEnabled, props.OverrideEnabledRestore,
-    props.FloatXSize, props.FloatYSize, props.MinWidth, props.MinHeight, props.DebugMode
+	  TableTake(props, "Id"), TableTake(props, "Title"), TableTake(props, "InitDockState"), TableTake(props, "InitEnabled"),
+    TableTake(props, "OverrideEnabledRestore"), TableTake(props, "FloatXSize"), TableTake(props, "FloatYSize"),
+    TableTake(props, "MinWidth"), TableTake(props, "MinHeight"), TableTake(props, "DebugMode")
+
+  local children = TableTake(props, Children)
 
   local widget = scope:GetPlugin():CreateDockWidgetPluginGui(id, DockWidgetPluginGuiInfo.new(
     initDockState or Enum.InitialDockState.Float, initEnabled or true, overrideEnabledRestore or true,
@@ -63,8 +69,9 @@ return Component(function(scope, props: WindowSettingsProps)
     Selectable = false,
     Name = "Widget:Root"
   }
+  table.insert(scope, AddRootToHandler(scope, root))
 
-  local content = Background (scope, {
+  local content = Background (scope, (CombineProps({
     [Children] = {
       root,
 
@@ -73,10 +80,10 @@ return Component(function(scope, props: WindowSettingsProps)
         BackgroundTransparency = 1,
         Name = "Widget:Content",
     
-        [Children] = props[Children]
+        [Children] = children
       }
     }
-  })
+  }, props)))
 
   local debugGuiName = `UI_KIT_DEBUG[{id}]`
   local found = StarterGui:FindFirstChild(debugGuiName)
@@ -89,8 +96,6 @@ return Component(function(scope, props: WindowSettingsProps)
       [Children] = content:Clone()
     }
   end
-
-  table.insert(scope, AddRootToHandler(scope, root))
 
   return scope:Hydrate(widget) {
     Title = title or id,

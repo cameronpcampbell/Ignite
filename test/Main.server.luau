@@ -9,7 +9,7 @@ local Ignite = require(Packages.Ignite)
  
 --> Variables -----------------------------------------------------------------------------------------
 local Scope = Fusion.scoped(Fusion, Ignite)
-local Children, OnEvent, peek = Fusion.Children, Fusion.OnEvent, Fusion.peek
+local Children = Fusion.Children
 -------------------------------------------------------------------------------------------------------
  
  
@@ -17,11 +17,6 @@ local Children, OnEvent, peek = Fusion.Children, Fusion.OnEvent, Fusion.peek
 -- only be obtained in the plugin's root (this) script.
 Scope:SetPlugin(plugin)
  
-local CounterState = Scope:Value(0)
-local ComputeLabelText = Scope:Computed(function(use) return `Counter is: {use(CounterState)}` end)
-
-Scope:SetTheme("Dark")
-
 Scope:Widget {
   Id = "IgnitePlugin",
   Title = "My First Ignite Plugin 🚀",
@@ -29,28 +24,19 @@ Scope:Widget {
   FloatXSize = 300, FloatYSize = 800,
  
   [Children] = {
-    Scope:TextLabel {
-      Text = ComputeLabelText,
-      LayoutOrder = 0
-    },
- 
     Scope:Button {
-      Text = "Increment Counter!",
-      LayoutOrder = 1,
- 
-      [OnEvent "MouseButton1Click"] = function()
-        CounterState:set(peek(CounterState) + 1)
-      end
+      Text = "Click Me!",
+      Variant = "Primary" :: "Primary"
     },
  
     Scope:New "UIListLayout" {
       SortOrder = Enum.SortOrder.LayoutOrder,
-      Padding = UDim.new(0, 8)
+      Padding = UDim.new(0, 25)
     },
  
     Scope:New "UIPadding" {
-      PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8),
-      PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8)
+      PaddingLeft = UDim.new(0, 25), PaddingRight = UDim.new(0, 25),
+      PaddingTop = UDim.new(0, 25), PaddingBottom = UDim.new(0, 25)
     }
   }
 }

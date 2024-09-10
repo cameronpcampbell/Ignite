@@ -1,8 +1,8 @@
 {
-	"name": "ignite-x7dha2gai02",
+	"name": "ignite",
 	"tree": {
-		"$path": "package.project.json",
+		"$path": "src",
 
-    "Packages": { "$path": "PackageLinks/default" }
+		"Packages": { "$path": "PackageLinks/default" }
 	}
 }

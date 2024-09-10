@@ -13,7 +13,7 @@
 					"$path": "Packages",
 					
 					"Ignite": {
-						"$path": "package.project.json",
+						"$path": "src",
 						"Packages": { "$path": "PackageLinks/test" }
 					}
 				}

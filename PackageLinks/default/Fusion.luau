@@ -1,4 +1,4 @@
-local Fusion = require(script.Parent.Parent.Parent.Parent.Parent._Index["elttob_fusion@0.3.0"]["fusion"])
+local Fusion = require(script.Parent.Parent.Parent.Parent["elttob_fusion@0.3.0"]["fusion"])
 type Fusion = typeof(Fusion)
 
 export type Animatable = Fusion.Animatable

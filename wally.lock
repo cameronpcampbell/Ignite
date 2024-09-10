@@ -8,8 +8,8 @@ version = "0.8.3"
 dependencies = []
 
 [[package]]
-name = "cameroncampbell/uikit"
-version = "0.1.0"
+name = "cameronpcampbell/ignite-x7dha2gai02"
+version = "0.1.17"
 dependencies = [["Fusion", "elttob/fusion@0.3.0"], ["Highlighter", "boatbomber/highlighter@0.8.3"]]
 
 [[package]]

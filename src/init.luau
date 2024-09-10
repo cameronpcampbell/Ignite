@@ -37,6 +37,9 @@ return {
   ImageBackground = require(Components.ImageBackground),
   --Map = require(Components.Map),
 
+  -- ...ables
+  Scrollable = require(Components.Scrollable),
+
   -- Labels.
   TextLabel = require(CoreComponents.TextLabel),
   CodeLabel = require(CoreComponents.CodeLabel),
