@@ -5,7 +5,7 @@ Ignite is a UI library for developing Roblox plugins. It includes 10+ goregeous 
 
 ## Getting Started
 
-1. Install Ignite via [Wally](https://wally.run/package/mightypart/ignite?version=1.0.0) or via [github releases](https://github.com/MightyPart/Ignite/releases).
+1. Install Ignite via [Wally](https://wally.run/package/cameronpcampbell/ignite?version=1.0.0) or via [github releases](https://github.com/cameronpcampbell/Ignite/releases).
 ```
 ignite = "mightypart/ignite@1.0.0"
 ```
