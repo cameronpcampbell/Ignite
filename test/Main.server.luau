@@ -24,7 +24,23 @@ Scope:Widget {
   FloatXSize = 300, FloatYSize = 800,
  
   [Children] = {
+    Scope:TextInput {
+     
+    },
+
+    Scope:Container {
+      Header = { Text = "Preview" },
+      LayoutOrder = 0,
+
+      [Children] = Scope:ImageBackground {
+        Size = UDim2.new(1,0, 0,225),
+        ImageSource = "rbxassetid://89904945503839",
+        ImageSourceSize = Vector3.new(256, 0, 256)
+      }
+    },
+
     Scope:Button {
+      Width = UDim.new(.5, 0),
       Text = "Click Me!",
       Variant = "Primary" :: "Primary"
     },

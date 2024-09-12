@@ -24,7 +24,8 @@ local Fusion = require(Packages.Fusion)
 type TextInputProps = {
   Width: Fusion.UsedAs<UDim>?,
   Placeholder: Fusion.UsedAs<string?>,
-  Value: Fusion.UsedAs<string?>
+  Value: Fusion.UsedAs<string?>,
+  Variant: Fusion.UsedAs<"Primary" | "Secondary" | nil>?
 }
 -------------------------------------------------------------------------------------------------------
 
@@ -60,9 +61,14 @@ end
 
 return Component(function(scope, props: TextInputProps)
   local width = TableTake(props, "Width", UDim.new(1,0)) :: Fusion.UsedAs<UDim>
+  local variant = TableTake(props, "Variant")
   local placeholder, value = TableTake(props, "Placeholder", "Text Input"), TableTake(props, "Value")
 
   local isHoverState, isFocusState = scope:Value(false), scope:Value(false)
+
+  local computeBackgroundColor = scope:GetThemeItem(scope:Computed(function(use)
+    return `Background/{use(variant) == "Secondary" and "Tertiary" or "Secondary"}` :: any
+  end))
 
   local computeStrokeColor = scope:GetThemeItem(
     scope:Computed(function(use)
@@ -75,7 +81,7 @@ return Component(function(scope, props: TextInputProps)
     As = "ImageButton" :: "ImageButton",
     Size = ComputeUDim2(scope, width, UDim.new(0, 25)),
     Image = "rbxassetid://116342589966879",
-    BackgroundColor3 = scope:GetThemeItem("Background/Secondary"),
+    BackgroundColor3 = computeBackgroundColor,
     Name = "TextInput",
 
     [Children] = {

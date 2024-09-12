@@ -13,7 +13,7 @@ local Dark: Types.ThemeConfig = {
 		Primary = Color3.fromHex "#171717",
 		Secondary = Color3.fromHex "#252525",
 		Tertiary = Color3.fromHex "#2D2D2D",
-		Stroke = Color3.fromHex "#323232"
+		Stroke = Color3.fromHex "#363636"
 	},
 
 	Text = {

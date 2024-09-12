@@ -87,9 +87,16 @@ return Component(function(scope, props: ButtonProps)
             Text = text,
             Focus = "Title" :: "Title",
             Weight = Enum.FontWeight.SemiBold,
-            Size = UDim2.fromScale(1, 1),
+            Size = UDim2.fromScale(0, 1),
+            AutomaticSize = Enum.AutomaticSize.X,
             TextXAlignment = Enum.TextXAlignment.Center
           }),
+
+          scope:New "UIListLayout" {
+            FillDirection = Enum.FillDirection.Horizontal,
+            HorizontalAlignment = Enum.HorizontalAlignment.Center,
+            VerticalAlignment = Enum.VerticalAlignment.Center,
+          },
     
           scope:New "UIPadding" { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8) },
         }

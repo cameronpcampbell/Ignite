@@ -12,3 +12,9 @@
 /Packages/
 
 /docs_site/
+
+/*.git
+
+/*.zip
+
+/*.rbxm
