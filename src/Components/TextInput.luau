@@ -209,7 +209,7 @@ end
 return Component(function(scope, props: TextInputProps)
   local width: Fusion.UsedAs<UDim>, variant: Variant? = TableTake(props, "Width", UDim.new(1,0)), TableTake(props, "Variant")
   local placeholder, value = TableTake(props, "Placeholder", "Text Input"), ForceToState(scope, TableTake(props, "Value", ""))
-  local validation: ValidationProps? = TableTake(props, "Validation", "ErrorVisual")
+  local validation: ValidationProps? = TableTake(props, "Validation")
   local validationPattern, validationMode: Fusion.UsedAs<"Restrict" | "ErrorVisual" | nil> =
     validation and validation.Pattern, validation and validation.Mode
   local keybind: Fusion.UsedAs<{ Enum.KeyCode }>? = TableTake(props, "Keybind")
