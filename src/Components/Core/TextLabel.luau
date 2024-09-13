@@ -53,8 +53,8 @@ return Component(function(scope, props: TextLabelProps)
   local computeColor = scope:GetThemeItem(scope:Computed(function(use) return `Text/{use(focus) or "Body"}` :: any end))
 
   return scope:New "TextLabel" (CombineProps({
-    Size = ComputeUDim2(scope, UDim.new(1,0), ComputeUDim(scope, 0, textSize)),
-    AutomaticSize = Enum.AutomaticSize.Y,
+    Size = ComputeUDim2(scope, UDim.new(0,0), ComputeUDim(scope, 0, textSize)),
+    AutomaticSize = Enum.AutomaticSize.XY,
     FontFace = ComputeFontFromId(scope, fontId, weight, style),
     TextColor3 = computeColor,
     BackgroundTransparency = 1,

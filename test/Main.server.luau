@@ -11,20 +11,28 @@ local Ignite = require(Packages.Ignite)
 local Scope = Fusion.scoped(Fusion, Ignite)
 local Children = Fusion.Children
 -------------------------------------------------------------------------------------------------------
- 
- 
+
 -- We need to pass the plugin to the scope as it can
 -- only be obtained in the plugin's root (this) script.
 Scope:SetPlugin(plugin)
+
+local Text = Scope:Value("hello")
+
+--[[Scope:Observer(Text):onChange(function()
+  print(Fusion.peek(Text))
+end)]]
  
 Scope:Widget {
   Id = "IgnitePlugin",
   Title = "My First Ignite Plugin 🚀",
   InitDockState = Enum.InitialDockState.Left,
   FloatXSize = 300, FloatYSize = 800,
+  DebugMode = true,
  
   [Children] = {
     Scope:TextInput {
+      Value = "7205",
+      Keybind = { Enum.KeyCode.LeftControl, Enum.KeyCode.K },
      
     },
 

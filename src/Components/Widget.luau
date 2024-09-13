@@ -85,7 +85,7 @@ return Component(function(scope, props: WindowSettingsProps)
     }
   }, props)))
 
-  local debugGuiName = `UI_KIT_DEBUG[{id}]`
+  local debugGuiName = `CAMERONPCAMPBELL:IGNITE_DEBUG[{id}]`
   local found = StarterGui:FindFirstChild(debugGuiName)
   if found then found:Destroy() end
 

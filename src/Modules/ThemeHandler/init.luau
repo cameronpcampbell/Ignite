@@ -76,22 +76,30 @@ local function SetThemeForScope(scope: Fusion.Scope, theme: Types.ThemeConfig | 
 end
 
 local function GetThemeItemForScope(
-  scope: Fusion.Scope, item: Fusion.UsedAs<Types.ThemeItem>, feedbackMode: Fusion.UsedAs<Types.FeedbackMode?>?, twInfo: Fusion.UsedAs<TweenInfo?>? | false
+  scope: Fusion.Scope, item: Fusion.UsedAs<Types.ThemeItem>,
+  mutator: Fusion.UsedAs<Types.MutatorPreset | (self: Color3) -> Color3 | nil>?,
+  twInfo: Fusion.UsedAs<TweenInfo?>? | false
 )
   if twInfo == nil then twInfo = TweenInfo.new(.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out) end
 
-  return scope:Tween(scope:Computed(function(use)
+  local computed = scope:Computed(function(use)
     local usedItem = use(item)
     local color = if typeof(usedItem) == "Color3" then usedItem else GetThemeForScope(scope, use)[usedItem]
 
-    local usedFeebackMode = use(feedbackMode)
-    if (not usedFeebackMode) or usedFeebackMode == "Default" then return color end
+    local usedMutator = use(mutator)
+    if (not usedMutator) or usedMutator == "Default" then return color end
 
     return
-      if usedFeebackMode == "Hover" then ApplyHoverFeedbackMode(scope, color)
-      elseif usedFeebackMode == "Highlight" then ApplyHighlightFeedbackMode(scope, color)
-      else ApplyFocusFeedbackMode(scope, color)
-  end), if twInfo == false then nil else twInfo :: Fusion.UsedAs<TweenInfo>?)
+      if usedMutator == "Hover" then ApplyHoverFeedbackMode(scope, color)
+      elseif usedMutator == "Highlight" then ApplyHighlightFeedbackMode(scope, color)
+      elseif usedMutator == "Focus" then ApplyFocusFeedbackMode(scope, color)
+      elseif typeof(usedMutator) == "function" then usedMutator(color)
+      else color
+  end) :: Fusion.Computed<Color3>
+
+  return
+    if twInfo == false then computed
+    else scope:Tween(computed, twInfo :: TweenInfo)
 end
 -------------------------------------------------------------------------------------------------------
 

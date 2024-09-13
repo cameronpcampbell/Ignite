@@ -34,6 +34,6 @@ export type ThemeFlatConfig = {
 
 export type ThemeItem = "Background/Primary" | "Background/Secondary" | "Background/Tertiary" | "Background/Stroke" | "Text/Title" | "Text/Body" | "Accent/Primary" | "Accent/Secondary" | "Accent/Destructive"
 
-export type FeedbackMode = "Default" | "Hover" | "Focus" | "Highlight"
+export type MutatorPreset = "Default" | "Hover" | "Focus" | "Highlight"
 
 return nil
