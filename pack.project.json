@@ -1,0 +1,10 @@
+{
+	"name": "ignite",
+	"tree": {
+		"$path": "src",
+
+		"Packages": {
+      "$path": "Packages"
+    }
+	}
+}
