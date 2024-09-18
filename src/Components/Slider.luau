@@ -96,7 +96,7 @@ local function OnDraggerMove(scope: Component.Scope, sliderRef: Fusion.Value<Ima
 
     draggerButton1UpConn = peek(sliderRef).MouseButton1Up:Connect(stopDragging)
     removeStopDraggingConn = scope:AddRootEvent("InputEnded", stopDragging)
-    pluginMouseMoveConn = scope:GetPlugin():GetMouse().Move:Connect(stopDragging)
+    pluginMouseMoveConn = script:FindFirstAncestorOfClass("Plugin"):GetMouse().Move:Connect(stopDragging)
   end
 end
 -------------------------------------------------------------------------------------------------------

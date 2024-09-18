@@ -22,7 +22,7 @@ export type DynamicSection = string | Fusion.Child
 
 
 --> Functions -----------------------------------------------------------------------------------------
-local function Component<Props>(fn: (scope: Scope, props: Props) -> Instance)
+local function Component<Props>(fn: (scope: Scope, props: BaseProps & Props) -> Instance)
   return function(scope: Scope, ...: Props & BaseProps)
     local combinedProps = CombineProps(...) :: BaseProps & Props
     return fn(scope, combinedProps)

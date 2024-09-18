@@ -51,10 +51,6 @@ return Component(function(scope, props: SwitchProps)
     scope:Computed(function(use) return if use(isFocus) then "Focus" elseif use(isHover) then "Hover" else nil :: any end)
   )
 
-  scope:Observer(isHover):onChange(function()
-    print(peek(isHover))
-  end)
-
   local computeOuterImage = scope:Computed(function(use) return use(size) == "Large" and OUTER_IMAGE_LARGE or OUTER_IMAGE_SMALL end)
   local computerInnerImage = scope:Computed(function(use) return use(size) == "Large" and INNER_IMAGE_LARGE or INNER_IMAGE_SMALL end)
 

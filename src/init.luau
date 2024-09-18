@@ -1,11 +1,18 @@
 --!strict
 
 
+--> Services ------------------------------------------------------------------------------------------
+local HttpService = game:GetService("HttpService")
+-------------------------------------------------------------------------------------------------------
+
+
 --> Modules -------------------------------------------------------------------------------------------
 local Modules = script.Modules
-local PluginHandler = require(Modules.PluginHandler)
 local RootEventHandlersUtils = require(Modules.RootEventHandlersUtils)
 local ThemeHandler = require(Modules.ThemeHandler)
+
+local Packages = script.Packages
+local Fusion = require(Packages.Fusion)
 
 local Components = script.Components
 local CoreComponents = Components.Core
@@ -15,16 +22,23 @@ local PaddingComponents = Components.Padding
 
 --> Variables -----------------------------------------------------------------------------------------
 local AddRootEvent = RootEventHandlersUtils.AddRootEvent
+
+local GenerateGuid = HttpService.GenerateGUID
 -------------------------------------------------------------------------------------------------------
 
 
 return {
-  SetPlugin = PluginHandler.SetPlugin,
-  GetPlugin = PluginHandler.GetPlugin,
-
   SetTheme = ThemeHandler.SetThemeForScope,
   GetThemeItem = ThemeHandler.GetThemeItemForScope,
 
+  -- Can't rely on the table itself to be a unique table key as its memory address can change.
+  GetGuid = (function()
+    local hash = GenerateGuid(HttpService, false)
+
+    return function(scope: Fusion.Scope)
+      return hash
+    end
+  end)(),
   AddRootEvent = AddRootEvent,
 
   -- Plugins.
@@ -34,8 +48,9 @@ return {
   Accordion = require(Components.Accordion),
   Background = require(Components.Background),
   Container = require(Components.Container),
+  EmbeddedContainer = require(Components.EmbeddedContainer),
   ImageBackground = require(Components.ImageBackground),
-  --Map = require(Components.Map),
+  Map = require(Components.Map),
 
   -- ...ables
   Scrollable = require(Components.Scrollable),
@@ -53,6 +68,7 @@ return {
   Slider = require(Components.Slider),
   Switch = require(Components.Switch),
   Navigation = require(Components.Navigation),
+  Tabs = require(Components.Tabs),
 
   -- Other
   Progress = require(Components.Progress),

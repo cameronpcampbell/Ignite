@@ -1,6 +1,5 @@
 --> Modules -------------------------------------------------------------------------------------------
 local Modules = script.Parent.Parent
-local PluginHandler = require(Modules.PluginHandler)
 local RootEventHandlersUtils = require(Modules.RootEventHandlersUtils)
 local ThemeHandler = require(Modules.ThemeHandler)
 
@@ -12,7 +11,7 @@ local Fusion = require(Packages.Fusion)
 --> Types ---------------------------------------------------------------------------------------------
 type CustomScope = {
   AddRootEvent: typeof(RootEventHandlersUtils.AddRootEvent),
-  GetPlugin: typeof(PluginHandler.GetPlugin),
+  GetGuid: (scope: Fusion.Scope) -> string,
 
   SetTheme: typeof(ThemeHandler.SetThemeForScope),
   GetThemeItem: typeof(ThemeHandler.GetThemeItemForScope),

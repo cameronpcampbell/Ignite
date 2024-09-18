@@ -1,26 +1,8 @@
 {
-	"name": "Ignite",
+	"name": "ignite",
 	"tree": {
-		"$className": "DataModel",
+		"$path": "src",
 
-		"ServerStorage": {
-			"$className": "ServerStorage",
-
-			"Plugin": {
-				"$path": "test",
-
-				"Packages": {
-					"$path": "Packages",
-					
-					"Ignite": {
-						"$path": "src",
-						"Packages": { "$path": "PackageLinks/test" }
-					}
-				}
-			}
-		}
+		"Packages": { "$path": "PackageLinks/test" }
 	}
 }
-
-
-

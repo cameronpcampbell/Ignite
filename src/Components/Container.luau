@@ -21,7 +21,7 @@ local Fusion = require(Packages.Fusion)
 
 
 --> Types ---------------------------------------------------------------------------------------------
-type HeaderProps = {
+export type HeaderProps = {
   Text: Fusion.UsedAs<string>,
   IsExpanded: Fusion.UsedAs<boolean>?,
   Content: Fusion.UsedAs<Fusion.Child>?,
@@ -30,6 +30,8 @@ type HeaderProps = {
 
 type ContainerProps = {
   Width: Fusion.UsedAs<UDim>?,
+  ChildrenZIndex: Fusion.UsedAs<number>?,
+  OccluderZindex: Fusion.UsedAs<number>?,
   Header: HeaderProps?
 }
 -------------------------------------------------------------------------------------------------------
@@ -64,6 +66,7 @@ local function ContainerHeader(
     Size = UDim2.new(1,0, 0,25),
     Image = "rbxassetid://93713962247299",
     BackgroundColor3 = scope:GetThemeItem("Background/Tertiary"),
+    ClipsDescendants = true,
     Name = "Container:Header",
 
     [Children] = {
@@ -110,7 +113,7 @@ local function ContainerHeader(
         Size = UDim2.fromScale(0, 1),
         AutomaticSize = Enum.AutomaticSize.X,
         BackgroundTransparency = 1,
-        Name = "Container:Header:Left",
+        Name = "Container:Header:Right",
 
         [Children] = {
           headerContent,
@@ -119,7 +122,7 @@ local function ContainerHeader(
             FillDirection = Enum.FillDirection.Horizontal,
             VerticalAlignment = Enum.VerticalAlignment.Center,
             SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 5),
+            Padding = UDim.new(0, 7),
           },
         }
       },
@@ -133,7 +136,7 @@ local function ContainerHeader(
       },
 
       scope:New "UIPadding" {
-        PaddingLeft = UDim.new(0, 7), PaddingRight = UDim.new(0, 7),
+        PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8),
       }
     }
   })
@@ -144,6 +147,7 @@ end
 return Component(function(scope, props: ContainerProps)
   local width, children = TableTake(props, "Width", UDim.new(1, 0)), TableTake(props, Children)
   local backgroundColor3 = TableTake(props, "BackgroundColor3", scope:GetThemeItem("Background/Secondary")) :: Fusion.UsedAs<Color3>
+  local childrenZIndex, occluderZIndex = TableTake(props, "ChildrenZIndex"), TableTake(props, "OccluderZIndex")
 
   local header = TableTake(props, "Header") :: HeaderProps?
   local headerDisabled = if header then header.Disabled else false
@@ -215,12 +219,14 @@ return Component(function(scope, props: ContainerProps)
         Size = scope:Computed(function(use) return if use(computeHeaderDisabled) then UDim2.new(1,0, 1,0) else UDim2.new(1,0, 1,-25) end),
         Position = scope:Computed(function(use) return if use(computeHeaderDisabled) then UDim2.fromScale(0, 0) else UDim2.fromOffset(0, 25) end),
         Image = computeContentWrapperImage,
+        ZIndex = childrenZIndex,
         Name = "Container:ContentWrapper",
 
         [Children] = contentRef:set(scope:New "Frame" {
           Size = UDim2.fromScale(1, 0),
           AutomaticSize = Enum.AutomaticSize.Y,
           BackgroundTransparency = 1,
+          ZIndex = childrenZIndex,
           Name = "Container:Content",
           [Children] = children
         })
@@ -230,6 +236,7 @@ return Component(function(scope, props: ContainerProps)
         Size = UDim2.fromScale(1, 1),
         Image = "rbxassetid://80646129149756",
         BackgroundColor3 = scope:GetThemeItem("Background/Primary"),
+        ZIndex = occluderZIndex or 1000,
         Name = "Container:Occluder"
       }),
 
@@ -237,6 +244,7 @@ return Component(function(scope, props: ContainerProps)
         Size = UDim2.fromScale(1, 1),
         Image = "rbxassetid://72425541434885",
         BackgroundColor3 = scope:GetThemeItem("Background/Stroke"),
+        ZIndex = 998,
         Name = "Container:Stroke"
       }),
     }

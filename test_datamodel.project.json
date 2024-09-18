@@ -1,0 +1,26 @@
+{
+	"name": "Ignite",
+	"tree": {
+		"$className": "DataModel",
+
+		"ServerStorage": {
+			"$className": "ServerStorage",
+
+			"Plugin": {
+				"$path": "test",
+
+				"Packages": {
+					"$path": "Packages",
+					
+					"Ignite": {
+						"$path": "src",
+						"Packages": { "$path": "PackageLinks/test" }
+					}
+				}
+			}
+		}
+	}
+}
+
+
+

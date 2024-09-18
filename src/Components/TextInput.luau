@@ -12,11 +12,13 @@ local Components = script.Parent
 local CoreComponents = Components.Core
 local Squircle = require(CoreComponents.Squircle)
 local TextLabel = require(CoreComponents.TextLabel)
+local FocusVisual = require(CoreComponents.FocusVisual)
 
 local Modules = script.Parent.Parent.Modules
 local Component = require(Modules.Component)
 local ComputeTransforms = require(Modules.ComputeTransforms)
 local TableUtils = require(Modules.TableUtils)
+local CombineProps = require(Modules.CombineProps)
 local ForceToState = require(Modules.ForceToState)
 
 local Packages = script.Parent.Parent.Packages
@@ -25,7 +27,7 @@ local Fusion = require(Packages.Fusion)
 
 
 --> Types ---------------------------------------------------------------------------------------------
-type ValidationProps = {
+export type ValidationProps = Fusion.UsedAs<string> | {
   Pattern: Fusion.UsedAs<string>,
   Mode: Fusion.UsedAs<"Restrict" | "ErrorVisual" | nil>
 }
@@ -39,6 +41,10 @@ type TextInputProps = {
   Variant: Variant?,
   Keybind: Fusion.UsedAs<{ Enum.KeyCode }>?,
   Validation: ValidationProps?,
+  IsFocus: Fusion.UsedAs<boolean>?,
+  IsHover: Fusion.UsedAs<boolean>?,
+  StrokeImage: Fusion.UsedAs<string>?,
+  FocusImage: Fusion.UsedAs<string>?
 }
 -------------------------------------------------------------------------------------------------------
 
@@ -59,6 +65,18 @@ local function MakePatternLocal(pattern: string)
   pattern = string.gsub(pattern, "^\^+", "")
   pattern = string.gsub(pattern, "\$+$", "")
   return pattern
+end
+
+local function GetEventsFromProps(props)
+  local events = {}
+
+  for key,value in props do
+    if typeof(key) ~= "table" then continue end
+    if key.kind ~= "OnEvent" then continue end
+    events[key] = TableTake(props, key)
+  end
+
+  return events
 end
 
 local function TextBoxValidation(
@@ -183,39 +201,40 @@ local function KeybindIsPressed(pressedKeys: { Enum.KeyCode }, keybind: { Enum.K
 
   return if pressed == #keybind then true else false
 end
-
-local function FocusVisual(
-  scope: Component.Scope, isFocusState: Fusion.Value<boolean>,
-  computeStrokeThemeItem: Fusion.Computed<"Accent/Primary" | "Accent/Destructive" | "Background/Stroke">
-)
-  local computeSizeOffset = scope:Computed(function(use) return use(isFocusState) and 4 or 8 end)
-  local computeSizeUDim = ComputeUDim(scope, 1, computeSizeOffset)
-
-  local computeTransparency = scope:Computed(function(use) return use(isFocusState) and .6 or 1 end)
-
-  return Squircle (scope, {
-    Size = scope:Spring(ComputeUDim2(scope, computeSizeUDim, computeSizeUDim), 20, 1),
-    Position = UDim2.fromScale(.5, .5),
-    AnchorPoint = Vector2.new(.5, .5),
-    Image = "rbxassetid://129606470741282",
-    BackgroundColor3 = scope:GetThemeItem(computeStrokeThemeItem),
-    Transparency = computeTransparency,
-    Name = "TextInput:FocusVisual"
-  })
-end
 -------------------------------------------------------------------------------------------------------
 
 
 return Component(function(scope, props: TextInputProps)
   local width: Fusion.UsedAs<UDim>, variant: Variant? = TableTake(props, "Width", UDim.new(1,0)), TableTake(props, "Variant")
   local placeholder, value = TableTake(props, "Placeholder", "Text Input"), ForceToState(scope, TableTake(props, "Value", ""))
-  local validation: ValidationProps? = TableTake(props, "Validation")
-  local validationPattern, validationMode: Fusion.UsedAs<"Restrict" | "ErrorVisual" | nil> =
-    validation and validation.Pattern, validation and validation.Mode
-  local keybind: Fusion.UsedAs<{ Enum.KeyCode }>? = TableTake(props, "Keybind")
 
-  local isHoverState, isFocusState = scope:Value(false), scope:Value(false)
+  local validation: ValidationProps? = TableTake(props, "Validation")
+  local validationIsString = validation and type(validation) == "string"
+  local validationPattern = if not validation then nil else if validationIsString then validation else (validation :: any).Pattern
+  local validationMode = if not validation then nil else if validationIsString then nil else (validation :: any).Mode
+
+  local keybind: Fusion.UsedAs<{ Enum.KeyCode }>? = TableTake(props, "Keybind")
+  local isHoverState, isFocusState = ForceToState(scope, TableTake(props, "IsHover", false)), ForceToState(scope, TableTake(props, "IsFocus", false))
+  local strokeImage, focusImage = TableTake(props, "StrokeImage"), TableTake(props, "FocusImage")
+  local children = TableTake(props, "Children")
+
+  local events = GetEventsFromProps(props)
+  local focusLostEvent = TableTake(events, OnEvent("FocusLost"))
+
   local textBoxRef: Fusion.Value<Instance> = scope:Value(nil :: any)
+
+  isHoverState:set(false)
+
+  local function updateIsFocus()
+    if not peek(isFocusState) then return end
+    local peekedTextBox = peek(textBoxRef) :: TextBox
+    if not peekedTextBox then return end
+    if peekedTextBox:IsFocused() then return end
+    peekedTextBox:CaptureFocus()
+  end
+
+  scope:Observer(isFocusState):onChange(updateIsFocus)
+  scope:Observer(textBoxRef):onChange(updateIsFocus)
 
   local computeParsedPattern = scope:Computed(function(use)
     local pattern = MakePatternLocal(use(validationPattern))
@@ -238,7 +257,7 @@ return Component(function(scope, props: TextInputProps)
 
   local computeBackgroundColor = scope:GetThemeItem(scope:Computed(function(use)
     return `Background/{use(variant) == "Secondary" and "Tertiary" or "Secondary"}` :: any
-  end))
+  end)) :: Fusion.Computed<Color3>
 
   local computeStrokeThemeItem = scope:Computed(function(use): any
     if use(isValidated) == false then return "Accent/Destructive" end
@@ -281,12 +300,14 @@ return Component(function(scope, props: TextInputProps)
     [Children] = {
       Squircle (scope, {
         Size = UDim2.fromScale(1, 1),
-        Image = "rbxassetid://72425541434885",
+        Image = strokeImage or "rbxassetid://72425541434885",
         BackgroundColor3 = scope:GetThemeItem(computeStrokeThemeItem, computeStrokeFeedbackMode),
         Name = "TextInput:Stroke"
       }),
 
-      FocusVisual(scope, isFocusState, computeStrokeThemeItem),
+      FocusVisual(scope, isFocusState, computeStrokeThemeItem, focusImage),
+
+      children,
 
       scope:New "Frame" {
         Size = UDim2.new(1,0,1,0),
@@ -294,7 +315,7 @@ return Component(function(scope, props: TextInputProps)
         Name = "TextInput:Content",
 
         [Children] = {
-          textBoxRef:set(scope:New "TextBox" {
+          textBoxRef:set(scope:New "TextBox" (CombineProps({
             Size = UDim2.new(1,0, 1,0),
             BackgroundTransparency = 1,
             TextSize = 14,
@@ -308,22 +329,28 @@ return Component(function(scope, props: TextInputProps)
             LayoutOrder = 0,
     
             [OnEvent "Focused"] = function() isFocusState:set(true) end,
-            [OnEvent "FocusLost"] = function() isFocusState:set(false) end,
+            [OnEvent "FocusLost"] = function()
+              isFocusState:set(false)
+              if focusLostEvent then focusLostEvent() end
+            end,
     
             [OnEvent "MouseEnter"] = function() isHoverState:set(true) end,
             [OnEvent "MouseLeave"] = function() isHoverState:set(false) end,
     
             [OnChange "Text"] = function(newText) rawValue:set(newText) end,
 
-            [Children] = scope:New "UIFlexItem" {
-              FlexMode = Enum.UIFlexMode.Fill
-            }
-          }),
+            [Children] = scope:New "UIFlexItem" { FlexMode = Enum.UIFlexMode.Fill }
+          }, events))),
     
           scope:Computed(function(use)
             local usedKeybind = use(keybind)
             return if usedKeybind then KeybindPrompt(scope, usedKeybind) else nil
           end) :: any,
+
+          scope:New "UIPadding" {
+            PaddingRight = ComputeUDim(scope, 0, scope:Computed(function(use) return use(keybind) and 5 or 8 end)),
+            PaddingLeft = UDim.new(0, 8)
+          },
 
           scope:New "UIListLayout" {
             FillDirection = Enum.FillDirection.Horizontal,
@@ -332,15 +359,9 @@ return Component(function(scope, props: TextInputProps)
             VerticalAlignment = Enum.VerticalAlignment.Center,
             Padding = UDim.new(0, 5)
           },
-
-          scope:New "UIPadding" {
-            PaddingRight = ComputeUDim(scope, 0, scope:Computed(function(use) return use(keybind) and 5 or 7 end)),
-            PaddingLeft = UDim.new(0, 7)
-          }
         }
       }
       
     }
   }, props :: any)
 end)
-

@@ -53,7 +53,7 @@ return Component(function(scope, props: WindowSettingsProps)
 
   local children = TableTake(props, Children)
 
-  local widget = scope:GetPlugin():CreateDockWidgetPluginGui(id, DockWidgetPluginGuiInfo.new(
+  local widget = script:FindFirstAncestorOfClass("Plugin"):CreateDockWidgetPluginGui(id, DockWidgetPluginGuiInfo.new(
     initDockState or Enum.InitialDockState.Float, initEnabled or true, overrideEnabledRestore or true,
     floatXSize or 0, floatYSize or 0,
     minWidth or floatXSize or 0, minHeight or floatYSize or 0
@@ -63,7 +63,7 @@ return Component(function(scope, props: WindowSettingsProps)
 
   local root = scope:New "Frame" {
     Size = UDim2.fromScale(1, 1),
-    ZIndex = 999,
+    ZIndex = 1099,
     BackgroundTransparency = 1,
     Active = false,
     Selectable = false,
