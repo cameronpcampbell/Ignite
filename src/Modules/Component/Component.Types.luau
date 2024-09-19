@@ -11,7 +11,6 @@ local Fusion = require(Packages.Fusion)
 --> Types ---------------------------------------------------------------------------------------------
 type CustomScope = {
   AddRootEvent: typeof(RootEventHandlersUtils.AddRootEvent),
-  GetGuid: (scope: Fusion.Scope) -> string,
 
   SetTheme: typeof(ThemeHandler.SetThemeForScope),
   GetThemeItem: typeof(ThemeHandler.GetThemeItemForScope),

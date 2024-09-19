@@ -35,8 +35,8 @@ export type RootHandlerFunctions = {
 }
 export type HandlerFunction = (InputObject) -> () | () -> () | (number, number) -> ()
 
-export type RootConnectionsForScopes = { [string]: { RBXScriptConnection } }
-export type RootHandlerFunctionsForScopes = { [string]: RootHandlerFunctions }
+export type RootConnectionsForScopes = { [Fusion.Scope]: { RBXScriptConnection } }
+export type RootHandlerFunctionsForScopes = { [Fusion.Scope]: RootHandlerFunctions }
 
 export type EventType =
   "InputBegan" | "InputEnded" | "InputChanged" |
@@ -46,94 +46,74 @@ export type EventType =
 
 --> Variables -----------------------------------------------------------------------------------------
 local RootConnectionsForScopes: RootConnectionsForScopes = {}
-local RootHandlerFunctionsForScopes: RootHandlerFunctionsForScopes = {}
+local RootHandlerFunctions: RootHandlerFunctions = {
+  InputBegan = { },
+  InputEnded = { },
+  InputChanged = { },
+
+  MouseButton1Click = { },
+  MouseButton1Down = { },
+  MouseButton1Up = { },
+
+  MouseButton2Click = { },
+  MouseButton2Down = { },
+  MouseButton2Up = { },
+
+  MouseEnter = { },
+  MouseLeave = { },
+  MouseMoved = { },
+
+  MouseWheelBackward = { },
+  MouseWheelForward = { }
+}
 
 local EVENT_TYPES = table.freeze {
-  InputBegan = 1, InputEnded = 2, InputChanged = 3,
-  MouseEnter = 4, MouseLeave = 5, MouseMoved = 6,
-  MouseWheelBackward = 7, MouseWheelForward = 8
+  "InputBegan", "InputEnded", "InputChanged",
+  "MouseEnter", "MouseLeave", "MouseMoved",
+  "MouseWheelBackward", "MouseWheelForward"
 }
 -------------------------------------------------------------------------------------------------------
 
 
 --> Functions -----------------------------------------------------------------------------------------
-local function GetRootConnectionsForScope(scopeGuid: string)
-  local rootConnections = RootConnectionsForScopes[scopeGuid]
+local function GetRootConnectionsForScope(scope: Fusion.Scope)
+  local rootConnections = RootConnectionsForScopes[scope]
   if rootConnections then return rootConnections end
 
   rootConnections = table.create(8)
-  RootConnectionsForScopes[scopeGuid] = rootConnections
+  RootConnectionsForScopes[scope] = rootConnections
 
   return (rootConnections :: any) :: RootConnections
 end
 
-
-local function GetRootHandlerFunctionsForScope(scopeGuid: string)
-  local rootHandlerFunctions = RootHandlerFunctionsForScopes[scopeGuid]
-  if rootHandlerFunctions then return rootHandlerFunctions end
-
-  rootHandlerFunctions = {
-    InputBegan = {},
-    InputEnded = {},
-    InputChanged = {},
-  
-    MouseButton1Click = {},
-    MouseButton1Down = {},
-    MouseButton1Up = {},
-  
-    MouseButton2Click = {},
-    MouseButton2Down = {},
-    MouseButton2Up = {},
-  
-    MouseEnter = {},
-    MouseLeave = {},
-    MouseMoved = {},
-  
-    MouseWheelBackward = {},
-    MouseWheelForward = {},
-  }
-  RootHandlerFunctionsForScopes[scopeGuid] = rootHandlerFunctions
-
-  return (rootHandlerFunctions :: any) :: RootHandlerFunctions
-end
-
-local function RootOnEvent(root: Instance, eventType: EventType, rootHandlerFunctions: RootHandlerFunctions)
+local function RootOnEvent(root: Instance, eventType: EventType)
   return ((root :: any)[eventType] :: RBXScriptSignal):Connect(function(...)
-    for _,handlerFn in rootHandlerFunctions do (handlerFn :: any)(...) end
+    for _,handlerFn in RootHandlerFunctions[eventType] do (handlerFn :: any)(...) end
   end)
 end
 
-local function CleanUpRootEventHandlers(scopeGuid: string, rootConnections: RootConnections, rootHandlerFunctions: RootHandlerFunctions)
+local function CleanUpRootConnections(scope: Fusion.Scope, rootConnections: RootConnections)
   return function()
     if rootConnections then
       for _,conn in rootConnections do conn:Disconnect() end
-      RootConnectionsForScopes[scopeGuid] = nil :: any
-    end
-
-    if rootHandlerFunctions then
-      RootHandlerFunctionsForScopes[scopeGuid] = nil
+      RootConnectionsForScopes[scope] = nil :: any
     end
   end
 end
 
-local function AddRootToHandler(scope: Fusion.Scope & { GetGuid: (scope: Fusion.Scope) -> string }, root: Instance)
-  local scopeGuid = scope:GetGuid()
-  local rootConnections = GetRootConnectionsForScope(scopeGuid)
-  local rootHandlerFunctions = GetRootHandlerFunctionsForScope(scopeGuid)
+local function AddRootToHandler(scope: Fusion.Scope, root: Instance)
+  local rootConnections = GetRootConnectionsForScope(scope)
 
-  for eventType, idx in EVENT_TYPES do
-    rootConnections[idx :: number] = RootOnEvent(root, eventType :: EventType, rootHandlerFunctions[eventType])
+  for idx, eventType in EVENT_TYPES do
+    rootConnections[idx :: number] = RootOnEvent(root, eventType :: EventType)
   end
 
-  return CleanUpRootEventHandlers(scopeGuid, rootConnections, rootHandlerFunctions)
+  return CleanUpRootConnections(scope, rootConnections)
 end
 
 
-local function AddRootEvent(scope: Fusion.Scope & { GetGuid: (scope: Fusion.Scope) -> string }, eventType: EventType, handlerFn: HandlerFunction)
-  local scopeGuid = scope:GetGuid()
-  local rootHandlerFunctions = GetRootHandlerFunctionsForScope(scopeGuid)
-
-  local rootHandlerFunctionsForEventType = rootHandlerFunctions[eventType]
+local function AddRootEvent(scope: Fusion.Scope, eventType: EventType, handlerFn: HandlerFunction)
+  local rootHandlerFunctionsForEventType = RootHandlerFunctions[eventType]
   table.insert(rootHandlerFunctionsForEventType, handlerFn)
 
   local function remove()
@@ -147,10 +127,6 @@ end
 
 
 return {
-  GetRootConnectionsForScope = GetRootConnectionsForScope,
-  GetRootHandlerFunctionsForScope = GetRootHandlerFunctionsForScope,
-
   AddRootToHandler = AddRootToHandler,
-
   AddRootEvent = AddRootEvent
 }

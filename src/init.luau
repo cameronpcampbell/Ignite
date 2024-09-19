@@ -2,7 +2,6 @@
 
 
 --> Services ------------------------------------------------------------------------------------------
-local HttpService = game:GetService("HttpService")
 -------------------------------------------------------------------------------------------------------
 
 
@@ -11,19 +10,19 @@ local Modules = script.Modules
 local RootEventHandlersUtils = require(Modules.RootEventHandlersUtils)
 local ThemeHandler = require(Modules.ThemeHandler)
 
-local Packages = script.Packages
-local Fusion = require(Packages.Fusion)
-
 local Components = script.Components
 local CoreComponents = Components.Core
 local PaddingComponents = Components.Padding
+
+local Packages = script.Packages
+local Fusion = require(Packages.Fusion)
 -------------------------------------------------------------------------------------------------------
 
 
 --> Variables -----------------------------------------------------------------------------------------
 local AddRootEvent = RootEventHandlersUtils.AddRootEvent
 
-local GenerateGuid = HttpService.GenerateGUID
+local innerScope = Fusion.innerScope
 -------------------------------------------------------------------------------------------------------
 
 
@@ -31,14 +30,6 @@ return {
   SetTheme = ThemeHandler.SetThemeForScope,
   GetThemeItem = ThemeHandler.GetThemeItemForScope,
 
-  -- Can't rely on the table itself to be a unique table key as its memory address can change.
-  GetGuid = (function()
-    local hash = GenerateGuid(HttpService, false)
-
-    return function(scope: Fusion.Scope)
-      return hash
-    end
-  end)(),
   AddRootEvent = AddRootEvent,
 
   -- Plugins.
@@ -75,5 +66,5 @@ return {
 
   -- Padding.
   PaddingSmall = require(PaddingComponents.PaddingSmall),
-  PaddingLarge = require(PaddingComponents.PaddingLarge)
+  PaddingLarge = require(PaddingComponents.PaddingLarge),
 }

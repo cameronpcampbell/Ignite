@@ -47,7 +47,7 @@ local function Tab(
   scope: Component.Scope, idx: number, section: TabSection,
   activeSectionState: Fusion.Value<number>, defaultActiveSectionState: Fusion.Value<number>,
   sectionSizing: Fusion.Value<"Fit" | "Fill">
-)
+) 
   local isHoverState, isFocusState = scope:Value(false), scope:Value(false)
 
   local computeIsActive = scope:Computed(function(use) return use(activeSectionState) == idx end)

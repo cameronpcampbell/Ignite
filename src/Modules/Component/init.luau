@@ -1,5 +1,6 @@
 --!strict
 
+
 --> Modules -------------------------------------------------------------------------------------------
 local ComponentTypes = require(script["Component.Types"])
 
@@ -9,6 +10,7 @@ local CombineProps = require(Modules.CombineProps)
 local Packages = script.Parent.Parent.Packages
 local Fusion = require(Packages.Fusion)
 -------------------------------------------------------------------------------------------------------
+
 
 --> Types ---------------------------------------------------------------------------------------------
 type BaseProps = {
@@ -21,18 +23,12 @@ export type DynamicSection = string | Fusion.Child
 -------------------------------------------------------------------------------------------------------
 
 
---> Functions -----------------------------------------------------------------------------------------
-local function Component<Props>(fn: (scope: Scope, props: BaseProps & Props) -> Instance)
+return function<Props>(fn: (scope: Scope, props: BaseProps & Props) -> Instance)
   return function(scope: Scope, ...: Props & BaseProps)
     local combinedProps = CombineProps(...) :: BaseProps & Props
     return fn(scope, combinedProps)
   end
 end
--------------------------------------------------------------------------------------------------------
-
-
-return Component
-
 
 
 

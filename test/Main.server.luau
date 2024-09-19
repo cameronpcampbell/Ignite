@@ -14,6 +14,17 @@ local Children, OnEvent, peek = Fusion.Children, Fusion.OnEvent, Fusion.peek
 -------------------------------------------------------------------------------------------------------
 
 
+
+
+local MyTable = {}
+MyTable.__index = MyTable
+
+function MyTable:FooBar() return true end
+
+table.insert(MyTable, function() return true end)
+
+
+
 local CounterState = Scope:Value(0)
 local ComputeLabelText = Scope:Computed(function(use) return `Counter is: {use(CounterState)}` end)
 
@@ -24,18 +35,11 @@ Scope:Widget {
   FloatXSize = 300, FloatYSize = 800,
 
   [Children] = {
-    Scope:TextLabel {
-      Text = ComputeLabelText,
-      LayoutOrder = 0
-    },
-
-    Scope:Button {
-      Content = "Increment Counter!",
-      LayoutOrder = 1,
-
-      [OnEvent "MouseButton1Click"] = function()
-        CounterState:set(peek(CounterState) + 1)
-      end
+    Scope:Tabs {
+      Sections = {
+        { Text = "Hello" },
+        { Text = "World" }
+      }
     },
 
     Scope:New "UIListLayout" {
@@ -43,9 +47,9 @@ Scope:Widget {
       Padding = UDim.new(0, 8)
     },
 
-    Scope:New "UIPadding" {
+    --[[Scope:New "UIPadding" {
       PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8),
       PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8)
-    }
+    }]]
   }
 }
