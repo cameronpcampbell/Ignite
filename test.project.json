@@ -1,8 +1,18 @@
 {
-	"name": "ignite",
+	"name": "Ignite",
 	"tree": {
-		"$path": "src",
+		"$path": "test",
 
-		"Packages": { "$path": "PackageLinks/test" }
+		"Packages": {
+			"$path": "Packages",
+					
+			"Ignite": {
+				"$path": "src",
+				"Packages": { "$path": "PackageLinks/test" }
+			}
+		}
 	}
 }
+
+
+

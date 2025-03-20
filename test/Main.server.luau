@@ -1,55 +1,61 @@
 --!strict
 
-
 --> Modules -------------------------------------------------------------------------------------------
 local Packages = script.Parent.Packages
-local Fusion = require(Packages.Fusion)
-local Ignite = require(Packages.Ignite)
+local Fusion = require(Packages.Fusion) :: any
+local Ignite = require(Packages.Ignite) :: any
 -------------------------------------------------------------------------------------------------------
-
 
 --> Variables -----------------------------------------------------------------------------------------
 local Scope = Fusion.scoped(Fusion, Ignite)
-local Children, OnEvent, peek = Fusion.Children, Fusion.OnEvent, Fusion.peek
+local Children = Fusion.Children
+
 -------------------------------------------------------------------------------------------------------
-
-
-
 
 local MyTable = {}
 MyTable.__index = MyTable
 
-function MyTable:FooBar() return true end
+function MyTable:FooBar()
+	return true
+end
 
-table.insert(MyTable, function() return true end)
+table.insert(MyTable, function()
+	return true
+end)
 
+Scope:Widget({
+	Id = "IgnitePlugin",
+	Title = "My First Ignite Plugin 🚀",
+	InitDockState = Enum.InitialDockState.Left,
+	FloatXSize = 300,
+	FloatYSize = 800,
 
+	[Children] = {
+		Scope:Tabs({
+			Sections = {
+				{ Text = "Hello" },
+				{ Text = "World" },
+			},
+		}),
 
-local CounterState = Scope:Value(0)
-local ComputeLabelText = Scope:Computed(function(use) return `Counter is: {use(CounterState)}` end)
+		Scope:New("UIListLayout")({
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			Padding = UDim.new(0, 8),
+		}),
 
-Scope:Widget {
-  Id = "IgnitePlugin",
-  Title = "My First Ignite Plugin 🚀",
-  InitDockState = Enum.InitialDockState.Left,
-  FloatXSize = 300, FloatYSize = 800,
+		Scope:Button({
 
-  [Children] = {
-    Scope:Tabs {
-      Sections = {
-        { Text = "Hello" },
-        { Text = "World" }
-      }
-    },
+			Content = { "Test Button!" },
 
-    Scope:New "UIListLayout" {
-      SortOrder = Enum.SortOrder.LayoutOrder,
-      Padding = UDim.new(0, 8)
-    },
+			IconProperties = {
+				BackgroundTransparency = 0,
+				Size = UDim2.fromOffset(4, 4),
+			},
+		}),
 
-    --[[Scope:New "UIPadding" {
+		--[[Scope:New "UIPadding" {
       PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8),
       PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8)
     }]]
-  }
-}
+	},
+})
